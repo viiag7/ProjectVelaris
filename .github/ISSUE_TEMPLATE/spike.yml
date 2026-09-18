@@ -1,0 +1,42 @@
+name: Spike
+description: Time-boxed research or experiment to reduce uncertainty
+title: "[Spike] "
+labels:
+  - question
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question / uncertainty
+      description: What do we need to learn or validate?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why is this blocking or risky?
+    validations:
+      required: true
+  - type: input
+    id: timebox
+    attributes:
+      label: Timebox
+      placeholder: "Example: 1 day"
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Experiment / research method
+      description: Benchmark, prototype, documentation review, failure test, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Required evidence
+      description: What evidence must the Spike produce?
+      placeholder: "Measurements, conclusion, ADR recommendation, follow-up Stories"
+    validations:
+      required: true
