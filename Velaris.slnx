@@ -26,4 +26,7 @@
     <Project Path="tests/Modules/Submission/Velaris.Submission.IntegrationTests/Velaris.Submission.IntegrationTests.csproj" />
     <Project Path="tests/Modules/Submission/Velaris.Submission.UnitTests/Velaris.Submission.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/tests/Spikes/">
+    <Project Path="tests/Spikes/Velaris.SmtpEngine.Spike/Velaris.SmtpEngine.Spike.csproj" />
+  </Folder>
 </Solution>
