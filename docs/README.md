@@ -8,6 +8,7 @@ This directory is the source of truth for product requirements, architecture and
 - [Requirements](requirements/README.md): functional requirements grouped by domain.
 - [Architecture](architecture/overview.md): system model and message lifecycle.
 - [ADRs](adr/README.md): important architecture decisions and their rationale.
+- [Engineering](engineering/smtp-submission-development.md): implementation stack, solution shape and development workflow.
 - [Future](future/): features intentionally deferred from the initial scope.
 
 ## Documentation workflow

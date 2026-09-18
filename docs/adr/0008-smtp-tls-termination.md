@@ -1,6 +1,6 @@
 # ADR-0008: SMTP TLS Terminates in the Submission Service
 
-**Status:** Accepted
+**Status:** Accepted; authentication and channel-binding portions superseded by ADR-0015
 
 ## Context
 

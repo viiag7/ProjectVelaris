@@ -2,6 +2,8 @@
 
 This document provides initial implementation defaults for Story #4. It complements the accepted SMTP Submission ADRs without replacing requirements or turning adjustable operational parameters into permanent product rules.
 
+The runtime and development baseline is defined by [ADR-0014](../adr/0014-dotnet-10-submission-stack.md), authentication by [ADR-0015](../adr/0015-scram-sha-256-over-implicit-tls.md), and the working conventions by the [SMTP Submission Development Guide](../engineering/smtp-submission-development.md). The SMTP engine remains gated by the focused compatibility Spike described there.
+
 The governing principle is:
 
 > Define invariants and safe defaults now. Keep performance parameters adjustable and validate them through tests, benchmarks and observability.
@@ -320,4 +322,4 @@ requirements
 - RNF-DB-006, RNF-DB-008 through RNF-DB-012
 - RNF-MNT-004 and RNF-MNT-005
 - RNF-OBS-001 through RNF-OBS-005 and RNF-OBS-009
-- ADR-0008 through ADR-0013
+- ADR-0008 through ADR-0015
