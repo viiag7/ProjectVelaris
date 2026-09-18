@@ -40,6 +40,8 @@ The SMTP engine is intentionally **not** selected by this ADR. A short Technical
 
 Candidates may include a maintained extensible server library, a reviewed fork or a narrowly scoped protocol implementation over the .NET TLS and I/O APIs. Forking a package or implementing protocol parsing locally requires an explicit recommendation from the Spike, including security ownership and upgrade cost.
 
+*(Resolved by [Spike #11: Validate the .NET 10 SMTP and SCRAM Engine](../engineering/spikes/0011-smtp-scram-engine-spike.md), which selected and validated the narrowly scoped protocol implementation over .NET 10 TLS and I/O APIs).*
+
 ## Consequences
 
 - Developers have one supported runtime and project structure for Story #4.

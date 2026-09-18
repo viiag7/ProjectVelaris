@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>Velaris.SmtpEngine.Spike</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="MailKit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Modules\Submission\Velaris.Submission.Domain\Velaris.Submission.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\Modules\Submission\Velaris.Submission.Application\Velaris.Submission.Application.csproj" />
+    <ProjectReference Include="..\..\..\src\Modules\Submission\Velaris.Submission.Smtp\Velaris.Submission.Smtp.csproj" />
+  </ItemGroup>
+
+</Project>
