@@ -6,15 +6,20 @@ This document captures the current logical architecture. It is intentionally tec
 
 ```mermaid
 flowchart TD
-    C[Client] --> A[HTTP API / SMTP Submission]
-    A --> AUTH[Credential Authentication]
+    C[Client] --> L4[Layer 4 TCP Load Balancer]
+    L4 --> A[SMTP Submission: TLS termination]
+    A --> AUTH[SCRAM Credential Authentication]
     AUTH --> SG[Sender Grant Validation]
     SG --> STATUS[Tenant + Environment State]
     STATUS --> SUP[Suppression Check]
-    SUP --> EQ[Environment Quota]
-    EQ --> TQ[Tenant Aggregate Quota]
-    TQ --> M[Atomically persist Message and one Delivery per recipient]
-    M --> ACK[Return submission success]
+    SUP --> EQ[Environment quota precheck]
+    EQ --> TQ[Tenant aggregate quota precheck]
+    TQ --> B{Attachments?}
+    B -- yes --> O[Durably store attachment objects]
+    B -- no --> M[Relational acceptance transaction]
+    O --> M
+    M --> P[Persist Message content + references + Deliveries]
+    P --> ACK[Return submission success]
     ACK --> BOUNDARY[[Acceptance boundary]]
     BOUNDARY --> Q[Queue processing]
     Q --> DP[Select Delivery Pool]
@@ -23,7 +28,9 @@ flowchart TD
     SMTP --> ATT[Delivery Attempt]
 ```
 
-The first increment ends at the acceptance boundary. Final SMTP submission success depends on atomic persistence of the Message, envelope, content, audit metadata and one unqueued Delivery per accepted recipient, but not on queue processing or outbound delivery.
+The first increment ends at the acceptance boundary. Message envelope, headers, bodies and metadata are relational. When attachments exist, final SMTP success depends on durable attachment storage followed by atomic relational persistence of quota consumption, Message data, attachment references and one unqueued Delivery per accepted recipient. Messages without attachments do not depend on Object Storage. Acceptance does not depend on queue processing or outbound delivery.
+
+See [SMTP Submission Architecture](smtp-submission.md) for the security, persistence, concurrency, configuration and failure boundaries of Story #4.
 
 ## Main boundaries
 
@@ -51,3 +58,4 @@ Provides message history, Delivery Attempts, usage metrics and dashboards.
 - Authentication and sender authorization are separate concerns.
 - Delivery Pools abstract outbound routing resources.
 - Protocol replies, not free-form response text, drive SMTP retry semantics.
+- Accepted SMTP submission is at-least-once when the final reply is lost after commit.

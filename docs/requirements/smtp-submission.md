@@ -72,6 +72,10 @@ An accepted SMTP submission must durably record:
 - the acceptance timestamp;
 - sufficient non-secret connection and authentication metadata for auditability.
 
+The relational acceptance model must retain the SMTP envelope, message headers, body content and submission metadata. Attachment bytes must be durably stored in Blob/Object Storage before relational acceptance commits, and the Message must retain each attachment's identifier, opaque object reference, filename when supplied, content type, size, hash/checksum and required MIME relationship metadata.
+
+Messages without attachments must not require a Blob/Object Storage operation for acceptance.
+
 The same atomic acceptance operation must create exactly one Delivery for every accepted envelope recipient. Those Deliveries must remain unqueued and unprocessed at the acceptance boundary.
 
 ## RF-SUB-009 — Final Reply and Atomic Failure
@@ -86,15 +90,32 @@ Final SMTP submission success must not depend on queue processing, Delivery Pool
 
 Accepted submission data must remain isolated to the Tenant resolved from the authenticating Credential.
 
+## RF-SUB-011 — Ambiguous Completion and Retransmission
+
+If Velaris commits acceptance but the SMTP connection fails before the client observes the final success reply, the committed Message and Deliveries must remain accepted.
+
+A client retransmission is a new SMTP submission and may create a new Message and Delivery set. Velaris must not deduplicate independent SMTP submissions using only client `Message-ID`, content hash or other heuristic similarity.
+
+Internal retries for the same Velaris work item must remain idempotent by Velaris identifiers.
+
 ## Related requirements
 
 - [Message Requirements](messages.md): RF-MSG-002, RF-MSG-005 and RF-MSG-006.
-- [Credential Requirements](credentials.md): RF-CRE-003, RF-CRE-004 and RF-CRE-010 through RF-CRE-013.
+- [Credential Requirements](credentials.md): RF-CRE-003, RF-CRE-004 and RF-CRE-010 through RF-CRE-014.
 - [Tenant Requirements](tenants.md): RF-TEN-004 and RF-TEN-015.
 - [Environment Requirements](environments.md): RF-ENV-004.
 - [Quota Requirements](quotas.md): RF-QUO-001 through RF-QUO-007.
 - [Suppression Requirements](suppressions.md): RF-SUP-001 through RF-SUP-003.
 - [Access Control Requirements](access-control.md): RF-ACL-015.
+
+## Related architecture decisions
+
+- [ADR-0008](../adr/0008-smtp-tls-termination.md) — SMTP TLS termination.
+- [ADR-0009](../adr/0009-smtp-scram-credential-verifiers.md) — SCRAM verifier storage and lifecycle.
+- [ADR-0010](../adr/0010-message-and-attachment-persistence.md) — relational Message data, durable attachment storage and failure handling.
+- [ADR-0011](../adr/0011-concurrent-quota-acceptance.md) — atomic quota consumption and acceptance.
+- [ADR-0012](../adr/0012-submission-configuration-consistency.md) — configuration consistency.
+- [ADR-0013](../adr/0013-smtp-at-least-once-submission.md) — retransmission semantics.
 
 ## References
 
