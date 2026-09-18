@@ -8,6 +8,7 @@ This guide turns Story #4, ADR-0014 and ADR-0015 into an executable development 
 |---|---|---|
 | Runtime | .NET 10 LTS, `net10.0`, C# 14 | Pin the SDK feature band in `global.json`; deploy on a supported Linux runtime image. |
 | Service host | .NET Generic Host / Worker | Own startup, configuration validation, dependency injection, cancellation and graceful shutdown. |
+| Local orchestration | .NET Aspire 13.x AppHost | Start the SMTP service, PostgreSQL, MinIO, migration resource and local observability as one reproducible environment. |
 | SMTP transport | .NET 10 TLS/I/O APIs plus the engine selected by the SMTP/SCRAM Spike | Require implicit TLS and server-side `SCRAM-SHA-256`; do not use a package that exposes only `PLAIN`/`LOGIN`. |
 | MIME | MimeKit 4.x | Parse bounded streams and map to the relational Message/body/attachment representation without silently discarding valid parts. |
 | Database | PostgreSQL 18.x | Authoritative relational source for submission configuration and acceptance state. |
@@ -15,7 +16,7 @@ This guide turns Story #4, ADR-0014 and ADR-0015 into an executable development 
 | Migrations | Entity Framework Core migrations | Migrations are forward-safe, generate reviewed SQL, are repeatably tested and execute separately from normal service startup in production. |
 | Attachment boundary | `IAttachmentStorage` + AWS SDK for .NET S3 4.x | The first adapter targets the S3 API; MinIO is the local/CI contract-test target. Provider SDK types stay outside domain/application code, and the production S3-compatible service remains a deployment choice. |
 | Observability | OpenTelemetry .NET 1.x + OTLP; `Microsoft.Extensions.Logging` | Trace, metrics and structured-log correlation begin at connection acceptance; never record secrets or message content. |
-| Tests | xUnit 3.x, Microsoft Testing Platform, Testcontainers for .NET 4.x | Unit, protocol, PostgreSQL, storage-contract, concurrency and failure tests are required according to task scope. |
+| Tests | xUnit 3.x, Microsoft Testing Platform and `Aspire.Hosting.Testing` 13.x | Aspire is the primary closed-box integration and end-to-end harness. Testcontainers is optional only for a focused single-adapter test where an AppHost adds no value. |
 | Delivery | Docker multi-stage build + GitHub Actions | Run restore, format verification, build, tests, vulnerability checks and container build. |
 
 Exact package patches are selected and centrally pinned by the bootstrap Task. Stable patch/security upgrades within these lines do not change the architecture.
@@ -36,6 +37,8 @@ The initial repository layout should make dependency direction visible:
 
 ```text
 src/
+  Velaris.AppHost/                     local/test orchestration only
+  Velaris.ServiceDefaults/             shared health and telemetry defaults
   Velaris.Submission.Host/             executable Generic Host
   Velaris.Submission.Application/      use cases, ports and acceptance policy
   Velaris.Submission.Domain/           Message, Delivery and invariant types
@@ -46,6 +49,7 @@ tests/
   Velaris.Submission.UnitTests/
   Velaris.Submission.IntegrationTests/
   Velaris.Submission.ProtocolTests/
+  Velaris.Submission.AspireTests/      closed-box environment tests
 deploy/
 ```
 
@@ -63,12 +67,88 @@ dotnet test --no-build --configuration Release
 dotnet list package --vulnerable --include-transitive
 ```
 
-Integration tests start isolated PostgreSQL and storage test dependencies through Testcontainers. Tests must not depend on a developer's shared database or cloud account.
+Integration and end-to-end tests start isolated PostgreSQL, MinIO and application resources through the Aspire AppHost. Tests must not depend on a developer's shared database, shared storage or cloud account. Direct Testcontainers usage requires a focused reason documented in the test project or pull request.
+
+## Local development and testing with Aspire
+
+.NET Aspire is the primary way to run the complete Velaris SMTP Submission environment on a developer machine and in closed-box integration tests.
+
+The AppHost is orchestration code only. It must not contain domain rules, application policy, persistence logic or production-only assumptions.
+
+### AppHost resources
+
+The initial AppHost models:
+
+```text
+Velaris.AppHost
+├── PostgreSQL 18
+│   └── Velaris submission database
+├── EF Core migration resource
+├── MinIO S3-compatible storage
+├── MinIO bucket/bootstrap resource when required
+├── SMTP Submission service
+└── Aspire Dashboard / OTLP endpoint
+```
+
+Resource dependencies and readiness are explicit:
+
+- the migration resource waits for PostgreSQL and applies the reviewed EF Core migrations;
+- the SMTP service waits for successful migration completion and healthy required dependencies;
+- MinIO is configured through the same `IAttachmentStorage` adapter contract used by an S3-compatible production service;
+- the SMTP TLS certificate is supplied through a secret parameter or developer secret store and is never committed;
+- PostgreSQL passwords, storage credentials and certificate passwords are generated or supplied as Aspire secret parameters rather than source-controlled values;
+- the Aspire Dashboard receives local OpenTelemetry data without changing domain or application code.
+
+Interactive local development may use named volumes when preserving data is useful. Automated tests use isolated ephemeral resources and must not reuse a developer's persistent volume.
+
+### Test responsibilities
+
+Use the smallest test scope that proves the behavior:
+
+| Test scope | Runtime dependencies | Primary purpose |
+|---|---|---|
+| Unit | None | Domain rules, policies, mappings and failure classification. |
+| Component/protocol | In-process boundary or focused test fixture | SMTP parser/state, SCRAM vectors, MIME cases and deterministic edge conditions. |
+| Aspire integration | AppHost-managed service and resources | PostgreSQL, migrations, S3 adapter, TLS SMTP behavior and dependency failures. |
+| Aspire end to end | Complete AppHost environment | Story #4 acceptance criteria, Tenant isolation, atomic persistence, telemetry and recovery behavior. |
+| Benchmark/Spike | Dedicated representative profile | Quota contention and capacity evidence that must not be inferred from local Aspire timings. |
+
+Aspire tests use `Aspire.Hosting.Testing` and start the real AppHost with `DistributedApplicationTestingBuilder`. They interact with the SMTP service through its public TCP/TLS endpoint rather than resolving internal services or bypassing protocol boundaries.
+
+The testing builder's randomized ports remain enabled so test runs can execute concurrently. Tests resolve endpoints by Aspire resource name and never assume a fixed local port.
+
+The test fixture must:
+
+- wait for resource readiness before opening an SMTP session;
+- use isolated Tenant, Environment, Credential, Message and bucket data;
+- pass a cancellation token and enforce an overall timeout;
+- capture useful logs and traces on failure without exposing secrets or message content;
+- dispose the distributed application so processes, containers and networks are cleaned up;
+- avoid order dependence and shared mutable state between tests.
+
+Starting an AppHost is relatively expensive. A test collection may share one healthy AppHost instance when isolation is preserved through unique test data and cleanup. Unit and component tests must not start Aspire unnecessarily.
+
+### Local commands
+
+The bootstrap Task must provide stable commands equivalent to:
+
+```text
+dotnet run --project src/Velaris.AppHost
+dotnet test tests/Velaris.Submission.AspireTests --configuration Release
+```
+
+Running the AppHost must be sufficient to discover resource endpoints, health, logs, traces and metrics through the Aspire Dashboard. A developer must not need a manually installed PostgreSQL instance, a shared MinIO instance or a cloud account.
+
+### Production boundary
+
+Aspire is the supported local-development and automated integration-test orchestrator. It does not make AppHost a runtime dependency of the SMTP service and does not, by itself, select the production deployment platform.
+
+Production remains based on immutable Linux containers, externally managed secrets and the approved deployment infrastructure. The production topology, persistence lifetime and capacity settings must not be inferred from Aspire's local defaults.
 
 ## Implementation order
 
 1. Run the .NET 10 SMTP/SCRAM engine Spike and record the build, extend or library recommendation.
-2. Bootstrap the solution, CI, container, configuration validation and telemetry skeleton.
+2. Bootstrap the solution, Aspire AppHost/test project, CI, container, configuration validation and telemetry skeleton.
 3. Add the EF Core model, versioned PostgreSQL migrations and data-access contracts.
 4. Implement the proven TLS/SMTP/SCRAM session path.
 5. Add sender, recipient, Suppression and centralized SMTP-reply policies.
