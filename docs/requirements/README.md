@@ -12,9 +12,10 @@ Requirements are grouped by domain. IDs are stable and should be referenced from
 | Domain | RF-DOM | [domains.md](domains.md) |
 | Credential | RF-CRE | [credentials.md](credentials.md) |
 | Message | RF-MSG | [messages.md](messages.md) |
+| SMTP Submission | RF-SUB | [smtp-submission.md](smtp-submission.md) |
 | Queue | RF-QUE | [queue.md](queue.md) |
 | Delivery | RF-DEL | [delivery.md](delivery.md) |
-| SMTP | RF-SMTP | [smtp.md](smtp.md) |
+| Outbound SMTP Delivery | RF-SMTP | [smtp.md](smtp.md) |
 | Delivery Pool | RF-DPL | [delivery-pools.md](delivery-pools.md) |
 | Suppression | RF-SUP | [suppressions.md](suppressions.md) |
 | Dashboard | RF-DAS | [dashboard.md](dashboard.md) |

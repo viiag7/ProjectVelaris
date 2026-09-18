@@ -55,3 +55,13 @@ The platform must reject new Domains when the sum of Domains across all Tenant E
 ## RF-TEN-014 — Credential Limit
 
 The platform must reject new active Credentials when the sum of active Credentials across all Tenant Environments reaches the Tenant Credential limit.
+
+## RF-TEN-015 — SMTP Submission Limits
+
+Tenant creation must require configuration of these SMTP submission limits, pre-filled from platform defaults:
+
+- maximum message size;
+- maximum recipients per submission;
+- maximum SMTP session duration.
+
+Every Environment and SMTP Credential belonging to the Tenant must be constrained by these limits.

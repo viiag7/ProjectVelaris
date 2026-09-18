@@ -1,0 +1,41 @@
+name: Epic
+description: Define a significant product or platform outcome
+title: "[Epic] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Epics describe outcomes spanning multiple Stories. Do not use an Epic as an implementation task.
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: What meaningful outcome should this Epic achieve?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What is included and explicitly excluded?
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Related RF / RNF / ADR
+      placeholder: "RF-..., RNF-..., ADR-..."
+  - type: textarea
+    id: success
+    attributes:
+      label: Success / exit criteria
+      description: What must be true for this Epic to be considered complete?
+    validations:
+      required: true
+  - type: textarea
+    id: stories
+    attributes:
+      label: Stories
+      description: Link child Stories as they are created.

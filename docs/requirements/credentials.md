@@ -77,6 +77,14 @@ Credential secrets must be treated as sensitive data.
 
 Read access to a Credential must not imply the ability to retrieve its existing secret in plain text.
 
+When verification does not require the original secret, Velaris must not store it in recoverable form. SMTP Credentials using SCRAM must store the salt, derivation parameters, `StoredKey`, `ServerKey` and required verifier metadata instead of the recoverable password.
+
 ## RF-CRE-013 — Envelope Sender
 
 When a client is allowed to provide SMTP `MAIL FROM` directly, the platform must either validate that envelope identity according to the Environment policy or replace it with a platform-controlled Return-Path.
+
+## RF-CRE-014 — Rotate Credential
+
+An active Credential must support secret rotation without recovering its previous secret.
+
+Rotation must activate new verification material and make the previous verifier ineligible for new authentication. Revocation must make every verifier version for the Credential ineligible.

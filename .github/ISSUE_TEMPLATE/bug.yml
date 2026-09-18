@@ -1,5 +1,5 @@
 name: Bug
-description: Report behavior that differs from the documented requirements
+description: Report behavior that differs from accepted requirements
 title: "[Bug] "
 labels:
   - bug
@@ -14,12 +14,28 @@ body:
     id: expected
     attributes:
       label: Expected behavior
-      description: Reference the applicable RF when possible.
+      description: Reference the applicable RF/RNF when possible.
     validations:
       required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Related RF / RNF / ADR
+      placeholder: "RF-..., RNF-..., ADR-..."
   - type: textarea
     id: reproduction
     attributes:
       label: Reproduction steps
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0
+        - P1
+        - P2
+        - P3
     validations:
       required: true

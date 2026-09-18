@@ -1,5 +1,21 @@
 # Scope
 
+## First usable increment
+
+The first increment provides authenticated SMTP submission through durable acceptance:
+
+```text
+authenticate
+  -> derive Tenant and Environment from the Credential
+  -> authorize sender
+  -> apply submission policy
+  -> atomically persist the Message, envelope, content, audit metadata and one Delivery per recipient
+  -> return final SMTP success
+  -> stop
+```
+
+The persisted Deliveries are not enqueued or processed within this increment. Queue processing, Delivery Pool selection, MX resolution, outbound SMTP connections and Delivery Attempts are excluded. They remain part of the broader initial scope below.
+
 ## Initial scope
 
 The initial Velaris scope includes:

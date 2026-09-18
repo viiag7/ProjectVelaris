@@ -12,14 +12,24 @@ flowchart TD
     ST -- no --> R3[Reject temporarily]
     ST -- yes --> SUP{Recipient suppressed?}
     SUP -- yes --> R4[Reject / suppress recipient]
-    SUP -- no --> EQ{Environment quota available?}
+    SUP -- no --> EQ{Environment quota precheck?}
     EQ -- no --> R5[Reject quota]
-    EQ -- yes --> TQ{Tenant quota available?}
+    EQ -- yes --> TQ{Tenant quota precheck?}
     TQ -- no --> R6[Reject quota]
-    TQ -- yes --> ACCEPT[Accept and persist]
-    ACCEPT --> DEL[Create Delivery per recipient]
-    DEL --> QUEUE[Queue]
+    TQ -- yes --> HAS{Attachments?}
+    HAS -- yes --> OBJ[Durably store every attachment]
+    HAS -- no --> ACCEPT[Relational acceptance transaction]
+    OBJ -- failure --> R7[Reject]
+    OBJ -- success --> ACCEPT
+    ACCEPT -- failure --> R8[Rollback and reject temporarily]
+    ACCEPT --> ACK[Return final submission success]
+    ACK --> STOP[[First-increment boundary]]
+    STOP -. later processing .-> QUEUE[Queue processing]
 ```
+
+The acceptance transaction stores the envelope, headers, body, metadata and attachment references and creates exactly one unqueued Delivery for every accepted envelope recipient. An attachment uploaded before a failed relational transaction is an unreachable orphan handled by safe reconciliation. Messages without attachments use no Object Storage operation. Queue processing begins only after the successful SMTP submission boundary.
+
+If relational commit succeeds but the client does not observe the final SMTP reply, the accepted Message remains valid. A retransmission is a separate submission and may create another Message under the at-least-once semantics in ADR-0013.
 
 ## Delivery lifecycle
 
