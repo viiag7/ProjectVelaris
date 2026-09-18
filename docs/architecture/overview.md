@@ -13,14 +13,17 @@ flowchart TD
     STATUS --> SUP[Suppression Check]
     SUP --> EQ[Environment Quota]
     EQ --> TQ[Tenant Aggregate Quota]
-    TQ --> M[Persist Message]
-    M --> D[Create Delivery per Recipient]
-    D --> Q[Queue]
+    TQ --> M[Durably persist accepted submission]
+    M --> ACK[Return submission success]
+    ACK --> BOUNDARY[[Acceptance boundary]]
+    BOUNDARY --> Q[Queue processing]
     Q --> DP[Select Delivery Pool]
     DP --> MX[Resolve MX]
     MX --> SMTP[SMTP Delivery]
     SMTP --> ATT[Delivery Attempt]
 ```
+
+The first increment ends at the acceptance boundary. Final SMTP submission success depends on durable Message, envelope, content and audit persistence, but not on queue processing or outbound delivery. Whether per-recipient Delivery entities are created inside the acceptance transaction or materialized later remains a product decision; either approach must preserve RF-MSG-006 before recipient delivery processing begins.
 
 ## Main boundaries
 
@@ -30,7 +33,7 @@ Responsible for Tenant, Environment, Domain, Credential, ACL, quota configuratio
 
 ### Submission plane
 
-Accepts authenticated HTTP API and SMTP submissions and performs validation before queue admission.
+Accepts authenticated HTTP API and SMTP submissions, performs required policy validation and safely persists accepted submission data.
 
 ### Delivery plane
 

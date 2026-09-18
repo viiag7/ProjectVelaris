@@ -1,6 +1,8 @@
-# SMTP Delivery Requirements
+# Outbound SMTP Delivery Requirements
 
-SMTP delivery behavior must follow the semantics of SMTP reply classes and preserve enough protocol detail for reliable retries and troubleshooting.
+This document governs Velaris-to-recipient-system SMTP delivery. Authenticated client-to-Velaris submission is governed separately by [SMTP Submission Requirements](smtp-submission.md).
+
+Outbound SMTP delivery behavior must follow the semantics of SMTP reply classes and preserve enough protocol detail for reliable retries and troubleshooting.
 
 ## RF-SMTP-001 — 2yz Replies
 

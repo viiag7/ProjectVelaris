@@ -37,6 +37,8 @@ Every recipient must create an independent Delivery entity.
 
 A Message with three recipients therefore creates three Deliveries.
 
+This requirement does not decide whether those Delivery entities are persisted atomically with submission acceptance or materialized later from durably persisted envelope recipients. That timing must be resolved before implementation of the first submission increment.
+
 ## RF-MSG-007 — Aggregate Message State
 
 Message state must be derived from the states of its Deliveries.
