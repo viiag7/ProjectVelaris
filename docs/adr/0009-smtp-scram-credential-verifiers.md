@@ -1,6 +1,6 @@
 # ADR-0009: SMTP Credentials Store SCRAM Verifiers
 
-**Status:** Accepted
+**Status:** Accepted; mechanism selection amended by ADR-0015
 
 ## Context
 

@@ -13,7 +13,7 @@ The initial SMTP submission service must:
 - use implicit TLS;
 - prefer TLS 1.3 and require TLS 1.2 or later;
 - disable TLS 1.0, TLS 1.1 and plaintext submission;
-- support `SCRAM-SHA-256-PLUS` with channel binding as its authentication mechanism;
+- support `SCRAM-SHA-256` as its authentication mechanism inside the mandatory implicit TLS session;
 - reject `PLAIN`, `LOGIN` and authentication outside an encrypted session.
 
 ## RF-SUB-002 — Credential-Derived Context
@@ -112,6 +112,7 @@ Internal retries for the same Velaris work item must remain idempotent by Velari
 
 - [ADR-0008](../adr/0008-smtp-tls-termination.md) — SMTP TLS termination.
 - [ADR-0009](../adr/0009-smtp-scram-credential-verifiers.md) — SCRAM verifier storage and lifecycle.
+- [ADR-0015](../adr/0015-scram-sha-256-over-implicit-tls.md) — SCRAM-SHA-256 over mandatory implicit TLS.
 - [ADR-0010](../adr/0010-message-and-attachment-persistence.md) — relational Message data, durable attachment storage and failure handling.
 - [ADR-0011](../adr/0011-concurrent-quota-acceptance.md) — atomic quota consumption and acceptance.
 - [ADR-0012](../adr/0012-submission-configuration-consistency.md) — configuration consistency.

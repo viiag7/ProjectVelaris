@@ -16,7 +16,7 @@ flowchart LR
     DB -. later .-> Q[Queue processing]
 ```
 
-The Layer 4 load balancer does not terminate SMTP TLS. The SMTP service owns the TLS session, `SCRAM-SHA-256-PLUS` channel binding and state for the lifetime of the connection, as defined by [ADR-0008](../adr/0008-smtp-tls-termination.md).
+The Layer 4 load balancer does not terminate SMTP TLS. The SMTP service owns the implicit TLS session and state for the lifetime of the connection, as defined by [ADR-0008](../adr/0008-smtp-tls-termination.md). Authentication uses `SCRAM-SHA-256` inside that encrypted session under [ADR-0015](../adr/0015-scram-sha-256-over-implicit-tls.md).
 
 ## Credential and configuration lookup
 
@@ -35,7 +35,7 @@ sequenceDiagram
     participant O as Object Storage
     participant D as Relational Store
 
-    C->>S: Implicit TLS + SCRAM-SHA-256-PLUS
+    C->>S: Implicit TLS + SCRAM-SHA-256
     S->>D: Resolve and validate submission context
     C->>S: MAIL FROM / RCPT TO / DATA
     opt Message has attachments
