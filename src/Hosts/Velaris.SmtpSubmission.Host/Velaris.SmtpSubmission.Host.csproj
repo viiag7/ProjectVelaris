@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Velaris.SmtpSubmission.Host</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Orchestration\Velaris.ServiceDefaults\Velaris.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\Modules\Submission\Velaris.Submission.Application\Velaris.Submission.Application.csproj" />
+    <ProjectReference Include="..\..\Modules\Submission\Velaris.Submission.Infrastructure\Velaris.Submission.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Submission\Velaris.Submission.Smtp\Velaris.Submission.Smtp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
+  </ItemGroup>
+
+</Project>

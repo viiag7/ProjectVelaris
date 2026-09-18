@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Velaris.Submission.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Velaris.Submission.Domain\Velaris.Submission.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
