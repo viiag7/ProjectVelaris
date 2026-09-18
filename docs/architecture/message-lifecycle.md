@@ -16,10 +16,13 @@ flowchart TD
     EQ -- no --> R5[Reject quota]
     EQ -- yes --> TQ{Tenant quota available?}
     TQ -- no --> R6[Reject quota]
-    TQ -- yes --> ACCEPT[Accept and persist]
-    ACCEPT --> DEL[Create Delivery per recipient]
-    DEL --> QUEUE[Queue]
+    TQ -- yes --> ACCEPT[Atomically persist Message and Deliveries]
+    ACCEPT --> ACK[Return final submission success]
+    ACK --> STOP[[First-increment boundary]]
+    STOP -. later processing .-> QUEUE[Queue processing]
 ```
+
+The acceptance transaction creates exactly one unqueued Delivery for every accepted envelope recipient. Queue processing begins only after the successful SMTP submission boundary.
 
 ## Delivery lifecycle
 
