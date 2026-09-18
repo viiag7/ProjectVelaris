@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Velaris.Submission.Smtp</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Velaris.Submission.Application\Velaris.Submission.Application.csproj" />
+    <ProjectReference Include="..\Velaris.Submission.Domain\Velaris.Submission.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

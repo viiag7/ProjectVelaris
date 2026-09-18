@@ -1,0 +1,15 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.5.3">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsAspireHost>true</IsAspireHost>
+    <RootNamespace>Velaris.AppHost</RootNamespace>
+    <UserSecretsId>velaris-apphost-secrets</UserSecretsId>
+    <AspireUseCliBundle>true</AspireUseCliBundle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Hosts\Velaris.SmtpSubmission.Host\Velaris.SmtpSubmission.Host.csproj" />
+  </ItemGroup>
+
+</Project>

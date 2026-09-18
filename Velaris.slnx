@@ -1,0 +1,28 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Hosts/">
+    <Project Path="src/Hosts/Velaris.SmtpSubmission.Host/Velaris.SmtpSubmission.Host.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Submission/">
+    <Project Path="src/Modules/Submission/Velaris.Submission.Application/Velaris.Submission.Application.csproj" />
+    <Project Path="src/Modules/Submission/Velaris.Submission.Domain/Velaris.Submission.Domain.csproj" />
+    <Project Path="src/Modules/Submission/Velaris.Submission.Infrastructure/Velaris.Submission.Infrastructure.csproj" />
+    <Project Path="src/Modules/Submission/Velaris.Submission.Smtp/Velaris.Submission.Smtp.csproj" />
+  </Folder>
+  <Folder Name="/src/Orchestration/">
+    <Project Path="src/Orchestration/Velaris.AppHost/Velaris.AppHost.csproj" />
+    <Project Path="src/Orchestration/Velaris.ServiceDefaults/Velaris.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/Architecture/">
+    <Project Path="tests/Architecture/Velaris.ArchitectureTests/Velaris.ArchitectureTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/Aspire/">
+    <Project Path="tests/Aspire/Velaris.Submission.AspireTests/Velaris.Submission.AspireTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/Modules/" />
+  <Folder Name="/tests/Modules/Submission/">
+    <Project Path="tests/Modules/Submission/Velaris.Submission.UnitTests/Velaris.Submission.UnitTests.csproj" />
+  </Folder>
+</Solution>
