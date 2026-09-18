@@ -61,6 +61,8 @@ AttachmentStorage
 
 Provider SDKs remain behind this boundary. A concrete adapter may later use Azure Blob Storage, OCI Object Storage, S3 or a compatible implementation without leaking provider-specific types, URLs or error models into the domain.
 
+The first concrete adapter uses the S3 API through AWS SDK for .NET. Local and CI contract tests run against MinIO. This selects an initial interoperable API and implementation path, not a permanent cloud vendor; a production deployment must name and qualify its S3-compatible service. Native Azure Blob, OCI Object Storage or other adapters may be added behind the same boundary when required.
+
 The relational attachment metadata supports at least:
 
 - `AttachmentId`;
@@ -83,7 +85,7 @@ Initial defaults and invariants:
 - Every attachment reference committed with an accepted Message points to an object whose durable write was confirmed first.
 - Hashes support integrity, correlation and diagnostics; they do not deduplicate independent SMTP submissions.
 
-The definitive Object Storage provider remains deliberately open.
+The definitive production Object Storage service remains deliberately open.
 
 ## Message representation
 

@@ -13,7 +13,7 @@ This guide turns Story #4, ADR-0014 and ADR-0015 into an executable development 
 | Database | PostgreSQL 18.x | Authoritative relational source for submission configuration and acceptance state. |
 | Database access | Entity Framework Core 10.x + Npgsql EF provider 10.x | EF Core owns mapping and the unit of work. Reviewed parameterized SQL is allowed inside the persistence adapter for exact quota/concurrency or set-based operations. |
 | Migrations | Entity Framework Core migrations | Migrations are forward-safe, generate reviewed SQL, are repeatably tested and execute separately from normal service startup in production. |
-| Attachment boundary | `IAttachmentStorage` in the application boundary | Provider SDKs stay in adapters; the production provider remains open. MinIO may be used only as an S3-compatible local/CI contract-test target. |
+| Attachment boundary | `IAttachmentStorage` + AWS SDK for .NET S3 4.x | The first adapter targets the S3 API; MinIO is the local/CI contract-test target. Provider SDK types stay outside domain/application code, and the production S3-compatible service remains a deployment choice. |
 | Observability | OpenTelemetry .NET 1.x + OTLP; `Microsoft.Extensions.Logging` | Trace, metrics and structured-log correlation begin at connection acceptance; never record secrets or message content. |
 | Tests | xUnit 3.x, Microsoft Testing Platform, Testcontainers for .NET 4.x | Unit, protocol, PostgreSQL, storage-contract, concurrency and failure tests are required according to task scope. |
 | Delivery | Docker multi-stage build + GitHub Actions | Run restore, format verification, build, tests, vulnerability checks and container build. |

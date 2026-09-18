@@ -20,6 +20,7 @@ The first Velaris SMTP Submission implementation uses:
 - PostgreSQL through Entity Framework Core 10 and the Npgsql provider;
 - Entity Framework Core migrations for versioned schema evolution;
 - MimeKit for defensive MIME parsing and traversal;
+- AWS SDK for .NET S3 behind `IAttachmentStorage` as the first durable Object Storage adapter;
 - OpenTelemetry for traces and metrics, with structured logging through `Microsoft.Extensions.Logging`;
 - xUnit and Testcontainers for unit, integration, concurrency and failure-path tests.
 
@@ -44,6 +45,7 @@ Candidates may include a maintained extensible server library, a reviewed fork o
 - Developers have one supported runtime and project structure for Story #4.
 - Entity Framework Core provides the unit of work, mapping and migration baseline while allowing explicit Npgsql/PostgreSQL statements where concurrency invariants require them.
 - MimeKit avoids implementing a MIME parser while preserving the Velaris relational representation boundary from ADR-0010.
+- The initial S3-compatible adapter is deployable against an approved compatible service while keeping cloud-provider types outside the domain and application layers.
 - Generic Host and OpenTelemetry use the standard .NET service lifecycle and instrumentation ecosystem.
 - Work independent of the SMTP engine can begin, but the protocol/authentication task cannot move to implementation until the engine Spike concludes.
 - .NET security patches, NuGet vulnerability scanning and dependency lifecycle management are part of routine maintenance.
@@ -70,4 +72,5 @@ Candidates may include a maintained extensible server library, a reviewed fork o
 - Entity Framework Core: https://learn.microsoft.com/ef/core/
 - Npgsql Entity Framework Core provider: https://www.npgsql.org/efcore/
 - MimeKit: https://github.com/jstedfast/MimeKit
+- AWS SDK for .NET S3: https://docs.aws.amazon.com/sdk-for-net/v4/developer-guide/csharp_s3_code_examples.html
 - OpenTelemetry .NET: https://opentelemetry.io/docs/languages/dotnet/
