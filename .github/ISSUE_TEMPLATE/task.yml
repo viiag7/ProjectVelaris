@@ -1,0 +1,29 @@
+name: Task
+description: Track technical work supporting a Story
+title: "[Task] "
+labels:
+  - enhancement
+body:
+  - type: input
+    id: story
+    attributes:
+      label: Parent Story
+      placeholder: "#123"
+    validations:
+      required: true
+  - type: textarea
+    id: work
+    attributes:
+      label: Work
+      description: Describe the technical work and expected output.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Completion criteria
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
