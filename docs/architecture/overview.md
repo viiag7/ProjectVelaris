@@ -32,6 +32,8 @@ The first increment ends at the acceptance boundary. Message envelope, headers, 
 
 See [SMTP Submission Architecture](smtp-submission.md) for the security, persistence, concurrency, configuration and failure boundaries of Story #4.
 
+See [SMTP Submission Implementation Guidelines](smtp-submission-implementation-guidelines.md) for safe initial defaults and parameters that remain subject to tests, benchmarks and operational evidence.
+
 ## Main boundaries
 
 ### Control plane
