@@ -9,12 +9,12 @@ authenticate
   -> derive Tenant and Environment from the Credential
   -> authorize sender
   -> apply submission policy
-  -> safely persist the Message, envelope, content and audit metadata
+  -> atomically persist the Message, envelope, content, audit metadata and one Delivery per recipient
   -> return final SMTP success
   -> stop
 ```
 
-Queue processing, Delivery Pool selection, MX resolution, outbound SMTP connections and Delivery Attempts are excluded from this increment. They remain part of the broader initial scope below.
+The persisted Deliveries are not enqueued or processed within this increment. Queue processing, Delivery Pool selection, MX resolution, outbound SMTP connections and Delivery Attempts are excluded. They remain part of the broader initial scope below.
 
 ## Initial scope
 

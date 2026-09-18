@@ -8,6 +8,14 @@ Velaris must require successful SMTP authentication before accepting a Message.
 
 An unauthenticated transaction must be rejected and must not create an accepted Message.
 
+The initial SMTP submission service must:
+
+- use implicit TLS;
+- prefer TLS 1.3 and require TLS 1.2 or later;
+- disable TLS 1.0, TLS 1.1 and plaintext submission;
+- support `SCRAM-SHA-256-PLUS` with channel binding as its authentication mechanism;
+- reject `PLAIN`, `LOGIN` and authentication outside an encrypted session.
+
 ## RF-SUB-002 — Credential-Derived Context
 
 Successful SMTP authentication must resolve exactly one Credential, Environment and Tenant.
@@ -18,7 +26,12 @@ The client must not be able to replace that context through SMTP envelope values
 
 Velaris must reject submission when the Credential is revoked or its Tenant or Environment is not active.
 
-The SMTP reply must distinguish temporary and permanent conditions according to the configured submission policy.
+SMTP submission failures must be classified as:
+
+- **soft bounce**: a `4yz` temporary failure that the client may retry;
+- **hard bounce**: a `5yz` permanent failure that requires the request, Credential or policy condition to change before retry.
+
+Transient platform or persistence failures, temporary resource state and temporarily unavailable quota must produce a soft bounce. Invalid or revoked Credentials, unauthorized senders, Suppressions and deterministic policy or configured-limit violations must produce a hard bounce.
 
 ## RF-SUB-004 — Envelope Sender Authorization
 
@@ -32,9 +45,13 @@ Velaris must evaluate each `RCPT TO` command according to submission policy and 
 
 At least one envelope recipient must be accepted before Velaris accepts `DATA`.
 
+Velaris must reject recipients beyond the Tenant's configured per-submission recipient limit.
+
 ## RF-SUB-006 — Submitted Content
 
 After at least one recipient is accepted, Velaris must process a valid `DATA` transaction and preserve the submitted message content separately from SMTP envelope metadata.
+
+Velaris must enforce the Tenant's configured maximum message size and maximum SMTP session duration.
 
 ## RF-SUB-007 — Pre-Acceptance Policy
 
@@ -55,6 +72,8 @@ An accepted SMTP submission must durably record:
 - the acceptance timestamp;
 - sufficient non-secret connection and authentication metadata for auditability.
 
+The same atomic acceptance operation must create exactly one Delivery for every accepted envelope recipient. Those Deliveries must remain unqueued and unprocessed at the acceptance boundary.
+
 ## RF-SUB-009 — Final Reply and Atomic Failure
 
 Velaris must return the final successful SMTP reply only after it has safely accepted responsibility for the Message and satisfied RF-SUB-008.
@@ -71,8 +90,15 @@ Accepted submission data must remain isolated to the Tenant resolved from the au
 
 - [Message Requirements](messages.md): RF-MSG-002, RF-MSG-005 and RF-MSG-006.
 - [Credential Requirements](credentials.md): RF-CRE-003, RF-CRE-004 and RF-CRE-010 through RF-CRE-013.
-- [Tenant Requirements](tenants.md): RF-TEN-004.
+- [Tenant Requirements](tenants.md): RF-TEN-004 and RF-TEN-015.
 - [Environment Requirements](environments.md): RF-ENV-004.
 - [Quota Requirements](quotas.md): RF-QUO-001 through RF-QUO-007.
 - [Suppression Requirements](suppressions.md): RF-SUP-001 through RF-SUP-003.
 - [Access Control Requirements](access-control.md): RF-ACL-015.
+
+## References
+
+- RFC 8314 — Cleartext Considered Obsolete: Use of Transport Layer Security (TLS) for Email Submission and Access: https://www.rfc-editor.org/rfc/rfc8314
+- RFC 7677 — SCRAM-SHA-256 and SCRAM-SHA-256-PLUS Simple Authentication and Security Layer (SASL) Mechanisms: https://www.rfc-editor.org/rfc/rfc7677
+- RFC 9325 — Recommendations for Secure Use of Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS): https://www.rfc-editor.org/rfc/rfc9325
+- RFC 5321 — Simple Mail Transfer Protocol: https://www.rfc-editor.org/rfc/rfc5321

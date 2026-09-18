@@ -37,7 +37,7 @@ Every recipient must create an independent Delivery entity.
 
 A Message with three recipients therefore creates three Deliveries.
 
-This requirement does not decide whether those Delivery entities are persisted atomically with submission acceptance or materialized later from durably persisted envelope recipients. That timing must be resolved before implementation of the first submission increment.
+For SMTP submission, those Delivery entities must be persisted atomically with the accepted Message, with exactly one Delivery for each accepted envelope recipient. Creation does not enqueue or process a Delivery.
 
 ## RF-MSG-007 — Aggregate Message State
 

@@ -16,13 +16,13 @@ flowchart TD
     EQ -- no --> R5[Reject quota]
     EQ -- yes --> TQ{Tenant quota available?}
     TQ -- no --> R6[Reject quota]
-    TQ -- yes --> ACCEPT[Durably persist accepted submission]
+    TQ -- yes --> ACCEPT[Atomically persist Message and Deliveries]
     ACCEPT --> ACK[Return final submission success]
     ACK --> STOP[[First-increment boundary]]
     STOP -. later processing .-> QUEUE[Queue processing]
 ```
 
-The accepted submission preserves every accepted envelope recipient. RF-MSG-006 still requires one Delivery per recipient, but product refinement must decide whether those entities are created atomically at acceptance or materialized later, before queue processing.
+The acceptance transaction creates exactly one unqueued Delivery for every accepted envelope recipient. Queue processing begins only after the successful SMTP submission boundary.
 
 ## Delivery lifecycle
 

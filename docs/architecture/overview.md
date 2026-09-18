@@ -13,7 +13,7 @@ flowchart TD
     STATUS --> SUP[Suppression Check]
     SUP --> EQ[Environment Quota]
     EQ --> TQ[Tenant Aggregate Quota]
-    TQ --> M[Durably persist accepted submission]
+    TQ --> M[Atomically persist Message and one Delivery per recipient]
     M --> ACK[Return submission success]
     ACK --> BOUNDARY[[Acceptance boundary]]
     BOUNDARY --> Q[Queue processing]
@@ -23,7 +23,7 @@ flowchart TD
     SMTP --> ATT[Delivery Attempt]
 ```
 
-The first increment ends at the acceptance boundary. Final SMTP submission success depends on durable Message, envelope, content and audit persistence, but not on queue processing or outbound delivery. Whether per-recipient Delivery entities are created inside the acceptance transaction or materialized later remains a product decision; either approach must preserve RF-MSG-006 before recipient delivery processing begins.
+The first increment ends at the acceptance boundary. Final SMTP submission success depends on atomic persistence of the Message, envelope, content, audit metadata and one unqueued Delivery per accepted recipient, but not on queue processing or outbound delivery.
 
 ## Main boundaries
 
