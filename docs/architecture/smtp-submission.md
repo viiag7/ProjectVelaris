@@ -2,6 +2,8 @@
 
 This document applies the accepted architecture decisions for Story #4. It describes the durable acceptance boundary without selecting an implementation language, framework, database product, object-storage product or cache product.
 
+Safe initial implementation defaults and deliberately deferred tuning parameters are documented separately in [SMTP Submission Implementation Guidelines](smtp-submission-implementation-guidelines.md).
+
 ## Component boundary
 
 ```mermaid
