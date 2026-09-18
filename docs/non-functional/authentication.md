@@ -78,6 +78,8 @@ SMTP authentication secrets must be protected with the same secret-management pr
 
 Credential exchange must only occur over a transport configuration approved for production security.
 
+When SCRAM verification is used, Velaris must retain only the derived verifier material and parameters required for authentication rather than a recoverable client password. Creation, rotation and revocation must not require recovery of an earlier secret.
+
 ## RNF-AUT-009 — Revocation
 
 **Status:** ACCEPTED
